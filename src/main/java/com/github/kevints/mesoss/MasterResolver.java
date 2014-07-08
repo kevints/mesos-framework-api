@@ -14,7 +14,6 @@ package com.github.kevints.mesoss;/*
  * limitations under the License.
  */
 
-import com.github.kevints.jompactor.PID;
 import com.google.common.util.concurrent.CheckedFuture;
 
 public interface MasterResolver {

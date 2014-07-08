@@ -2,11 +2,15 @@ package com.github.kevints.mesoss;
 
 import java.net.InetSocketAddress;
 import java.util.concurrent.Executor;
+import java.util.concurrent.Executors;
 
 import com.github.kevints.jompactor.PID;
 import com.github.kevints.mesos.Mesos.Credential;
 import com.github.kevints.mesos.Mesos.FrameworkInfo;
 import com.github.kevints.mesoss.impl.MesosMasterClientImpl;
+import com.google.common.util.concurrent.ListeningExecutorService;
+import com.google.common.util.concurrent.MoreExecutors;
+import com.google.common.util.concurrent.ThreadFactoryBuilder;
 
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.servlet.ServletContextHandler;
@@ -30,10 +34,17 @@ public class MesosSchedulerAdaptor {
     this.masterResolver = requireNonNull(builder.masterResolver);
     this.credential = requireNonNull(builder.credential);
 
+    ListeningExecutorService clientExecutor = MoreExecutors.listeningDecorator(
+        Executors.newCachedThreadPool(new ThreadFactoryBuilder()
+            .setDaemon(false)
+            .setNameFormat("libprocess-sender-%d")
+            .build()));
+
     Server server = new Server(InetSocketAddress.createUnresolved("127.0.0.1", 8080));
     MesosMasterClientImpl masterClient = new MesosMasterClientImpl(
         PID.fromString("master@127.0.0.1:5050"),
-        PID.fromString("scheduler(1)@127.0.0.1:8080"));
+        PID.fromString("scheduler(1)@127.0.0.1:8080"),
+        clientExecutor);
 
     ServletContextHandler context = new ServletContextHandler(ServletContextHandler.SESSIONS);
     context.setContextPath("/scheduler(1)/");
