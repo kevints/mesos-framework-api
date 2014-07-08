@@ -3,23 +3,31 @@ apply plugin: 'idea'
 apply plugin: 'java'
 apply plugin: 'maven-publish'
 apply plugin: 'protobuf'
-apply plugin: 'thrift'
+//apply plugin: 'thrift'
 
 group 'com.github.kevints.mesos'
 version = '0.18'
-mainClassName = 'com.github.kevints.mesos.MesosMasterClientTool'
+mainClassName = 'MesosMasterClientTool'
 
 repositories {
   mavenCentral()
   mavenLocal()
 }
 
+idea {
+  module {
+    downloadJavadoc = true
+    downloadSources = true
+  }
+}
+
 dependencies {
-  protoCompile 'com.google.protobuf:protobuf-java:2.4.1'
-  thriftCompile 'org.apache.thrift:libthrift:0.8.0'
+  protoCompile 'com.google.protobuf:protobuf-java:2.5.0'
+//  thriftCompile 'org.apache.thrift:libthrift:0.8.0'
   testCompile 'junit:junit:4.11'
   compile 'com.github.kevints.jompactor:jompactor:0.1.0-SNAPSHOT'
   compile 'com.google.http-client:google-http-client:1.18.0-rc'
+  compile 'com.google.http-client:google-http-client-protobuf:1.18.0-rc'
   compile 'org.eclipse.jetty:jetty-server:9.2.0.M0'
   compile 'org.eclipse.jetty:jetty-servlet:9.2.0.M0'
   compile 'org.slf4j:slf4j-jcl:1.7.6'

@@ -1,5 +1,6 @@
-package com.github.kevints.mesos;
+package com.github.kevints.mesoss;
 
+import com.github.kevints.mesos.Messages;
 import com.google.api.client.repackaged.com.google.common.base.Throwables;
 import com.google.common.base.Function;
 import com.google.common.collect.ImmutableMap;
