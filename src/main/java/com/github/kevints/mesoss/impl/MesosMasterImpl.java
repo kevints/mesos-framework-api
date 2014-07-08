@@ -50,7 +50,7 @@ public class MesosMasterImpl implements MesosMaster {
   public ListenableFuture<?> requestResources(Collection<Request> requests) {
     return client.send(ResourceRequestMessage.newBuilder()
         .setFrameworkId(frameworkId)
-        .addAllRequests(requests)
+        .addAllRequests(requireNonNull(requests))
         .build());
   }
 
@@ -62,9 +62,9 @@ public class MesosMasterImpl implements MesosMaster {
 
     return client.send(LaunchTasksMessage.newBuilder()
         .setFrameworkId(frameworkId)
-        .addAllOfferIds(offerIds)
-        .addAllTasks(tasks)
-        .setFilters(filters)
+        .addAllOfferIds(requireNonNull(offerIds))
+        .addAllTasks(requireNonNull(tasks))
+        .setFilters(requireNonNull(filters))
         .build());
   }
 
@@ -72,7 +72,7 @@ public class MesosMasterImpl implements MesosMaster {
   public ListenableFuture<?> killTask(TaskID taskId) {
     return client.send(KillTaskMessage.newBuilder()
         .setFrameworkId(frameworkId)
-        .setTaskId(taskId)
+        .setTaskId(requireNonNull(taskId))
         .build());
   }
 
@@ -81,8 +81,8 @@ public class MesosMasterImpl implements MesosMaster {
     // This is no mistake, offers are declined by sending LaunchTasksMessage with no task.
     return client.send(LaunchTasksMessage.newBuilder()
         .setFrameworkId(frameworkId)
-        .setOfferId(offerID)
-        .setFilters(filters)
+        .setOfferId(requireNonNull(offerID))
+        .setFilters(requireNonNull(filters))
         .build());
   }
 
@@ -101,9 +101,9 @@ public class MesosMasterImpl implements MesosMaster {
 
     return client.send(FrameworkToExecutorMessage.newBuilder()
         .setFrameworkId(frameworkId)
-        .setExecutorId(executorId)
-        .setSlaveId(slaveId)
-        .setData(data)
+        .setExecutorId(requireNonNull(executorId))
+        .setSlaveId(requireNonNull(slaveId))
+        .setData(requireNonNull(data))
         .build());
   }
 
@@ -111,7 +111,7 @@ public class MesosMasterImpl implements MesosMaster {
   public ListenableFuture<?> reconcileTasks(Collection<TaskStatus> statuses) {
     return client.send(ReconcileTasksMessage.newBuilder()
         .setFrameworkId(frameworkId)
-        .addAllStatuses(statuses)
+        .addAllStatuses(requireNonNull(statuses))
         .build());
   }
 }

@@ -14,12 +14,10 @@ package com.github.kevints.mesoss.impl;/*
  * limitations under the License.
  */
 
-import java.util.concurrent.atomic.AtomicReference;
-
 import com.github.kevints.jompactor.PID;
 import com.github.kevints.mesoss.MasterResolver;
 import com.google.api.client.http.HttpResponse;
-import com.google.common.util.concurrent.Atomics;
+import com.google.common.util.concurrent.AsyncFunction;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
 import com.google.protobuf.Message;
@@ -29,19 +27,20 @@ import static java.util.Objects.requireNonNull;
 class ResolvingMesosMasterClient implements MesosMasterClient {
 
   private final MasterResolver resolver;
-  private final AtomicReference<PID> currentMaster = Atomics.newReference();
+  private final PID schedulerPid;
 
-  ResolvingMesosMasterClient(MasterResolver resolver) {
+  ResolvingMesosMasterClient(MasterResolver resolver, PID schedulerPid) {
     this.resolver = requireNonNull(resolver);
+    this.schedulerPid = requireNonNull(schedulerPid);
   }
 
   @Override
-  public ListenableFuture<HttpResponse> send(Message message) {
-    Futures.transform(resolver.getMaster()
-
-    resolver.getMaster().
-
-
-    return null;
+  public ListenableFuture<HttpResponse> send(final Message message) {
+    return Futures.transform(resolver.getMaster(), new AsyncFunction<PID, HttpResponse>() {
+          @Override
+          public ListenableFuture<HttpResponse> apply(PID masterPid) throws Exception {
+            return new MesosMasterClientImpl(schedulerPid, masterPid).send(message);
+          }
+        });
   }
 }

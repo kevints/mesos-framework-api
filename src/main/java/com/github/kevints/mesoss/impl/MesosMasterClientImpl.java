@@ -20,7 +20,7 @@ import com.google.protobuf.Message;
 
 import static java.util.Objects.requireNonNull;
 
-public class MesosMasterClientImpl {
+public class MesosMasterClientImpl implements MesosMasterClient {
   private final PID masterPid;
   private final PID schedulerPid;
 
@@ -38,6 +38,7 @@ public class MesosMasterClientImpl {
     this.schedulerPid = requireNonNull(schedulerPid);
   }
 
+  @Override
   public ListenableFuture<HttpResponse> send(final Message message) {
     HttpContent content = new ProtoHttpContent(message);
     GenericUrl url = new GenericUrl(masterPid.getBaseUrl());
