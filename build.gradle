@@ -2,15 +2,16 @@ apply plugin: 'application'
 apply plugin: 'maven-publish'
 apply plugin: 'wrapper'
 
+mainClassName = 'com.github.kevints.mesos.scheduler.demo.DemoMain'
+applicationDefaultJvmArgs = ["-Djava.util.logging.config.file=${rootDir}/src/main/resources/logging.properties"]
+
 wrapper {
   gradleVersion = '2.0'
 }
 
 dependencies {
-  compile 'org.eclipse.jetty:jetty-server:9.2.0.M0'
-  compile 'org.eclipse.jetty:jetty-servlet:9.2.0.M0'
+  compile project(':mesos-scheduler-demo')
   compile 'org.slf4j:slf4j-jdk14:1.7.6'
-  compile project(':libprocess-client')
 }
 
 publishing {
@@ -21,7 +22,7 @@ publishing {
   }
 }
 
-allprojects {
+subprojects {
   apply plugin: 'java'
   apply plugin: 'idea'
   apply plugin: 'protobuf'
@@ -31,7 +32,6 @@ allprojects {
 
   dependencies {
     compile 'com.google.guava:guava:17.0'
-    protoCompile 'com.google.protobuf:protobuf-java:2.5.0'
     testCompile 'junit:junit:4.11'
   }
   repositories {

@@ -1,0 +1,6 @@
+dependencies {
+  compile 'org.eclipse.jetty:jetty-server:9.2.0.M0'
+  compile 'org.eclipse.jetty:jetty-servlet:9.2.0.M0'
+  compile project(':mesos-generated-messages')
+  compile project(':mesos-master-client')
+}

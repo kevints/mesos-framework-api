@@ -40,7 +40,7 @@ class LibprocessClientImpl implements LibprocessClient {
       @Override
       public HttpResponse call() throws Exception {
         HttpContent content = new ProtoHttpContent(message);
-        GenericUrl url = new GenericUrl(from.getBaseUrl());
+        GenericUrl url = new GenericUrl(to.getBaseUrl());
         url.appendRawPath("/" + message.getDescriptorForType().getFullName());
 
         return requestFactory.buildPostRequest(url, content)
@@ -52,7 +52,7 @@ class LibprocessClientImpl implements LibprocessClient {
                 .set("Connection", "keep-alive")
                     // TODO: Use this new header instead of user-agent munging once mesos supports it.
                     //.set("X-Libprocess-Sender", fromPid.toString())
-                .setUserAgent("libprocess/" + fromPid.toString()))
+                .setUserAgent("libprocess/" + from.toString()))
             .setThrowExceptionOnExecuteError(true)
             .execute();
       }
