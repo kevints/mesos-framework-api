@@ -25,6 +25,7 @@ dependencies {
   testCompile 'junit:junit:4.11'
   compile 'com.google.http-client:google-http-client:1.18.0-rc'
   compile 'com.google.http-client:google-http-client-protobuf:1.18.0-rc'
+  compile 'com.google.guava:guava:17.0'
   compile 'org.eclipse.jetty:jetty-server:9.2.0.M0'
   compile 'org.eclipse.jetty:jetty-servlet:9.2.0.M0'
   compile 'org.slf4j:slf4j-jcl:1.7.6'

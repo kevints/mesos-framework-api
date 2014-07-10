@@ -1,4 +1,4 @@
-package com.github.kevints.mesoss;/*
+package com.github.kevints.mesos;/*
  * Copyright 2013 Twitter, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");

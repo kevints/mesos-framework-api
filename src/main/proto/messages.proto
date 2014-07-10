@@ -19,7 +19,7 @@
 import "mesos.proto";
 
 package mesos.internal;
-option java_package = "com.github.kevints.mesos";
+option java_package = "com.github.kevints.mesos.gen";
 option java_outer_classname = "Messages";
 
 // TODO(benh): Provide comments for each of these messages. Also,

@@ -1,4 +1,4 @@
-package com.github.kevints.mesoss;
+package com.github.kevints.mesos;
 
 import org.junit.Test;
 

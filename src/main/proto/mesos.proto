@@ -18,7 +18,7 @@
 
 package mesos;
 
-option java_package = "com.github.kevints.mesos";
+option java_package = "com.github.kevints.mesos.gen";
 option java_outer_classname = "Mesos";
 
 

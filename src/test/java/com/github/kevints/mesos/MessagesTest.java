@@ -1,7 +1,7 @@
-package com.github.kevints.mesoss;
+package com.github.kevints.mesos;
 
-import com.github.kevints.mesos.Messages;
-import com.github.kevints.mesos.Messages.RegisterFrameworkMessage;
+import com.github.kevints.mesos.gen.Messages;
+import com.github.kevints.mesos.gen.Messages.RegisterFrameworkMessage;
 import com.google.protobuf.Message;
 import com.google.protobuf.Parser;
 

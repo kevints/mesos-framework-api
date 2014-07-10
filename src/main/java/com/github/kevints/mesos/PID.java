@@ -1,4 +1,4 @@
-package com.github.kevints.mesoss;
+package com.github.kevints.mesos;
 
 import java.io.Serializable;
 import java.net.MalformedURLException;
@@ -22,7 +22,7 @@ public final class PID implements Serializable {
   private final String id;
   private final HostAndPort hostAndPort;
 
-  private PID(String id, HostAndPort hostAndPort) {
+  public PID(String id, HostAndPort hostAndPort) {
     this.id = requireNonNull(id);
     this.hostAndPort = requireNonNull(hostAndPort);
   }

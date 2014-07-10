@@ -17,7 +17,7 @@
  */
 
 package mesos.internal.log;
-option java_package = "com.github.kevints.mesos";
+option java_package = "com.github.kevints.mesos.gen";
 option java_outer_classname = "Log";
 
 // Represents a "promise" that a replica has made. A promise is
