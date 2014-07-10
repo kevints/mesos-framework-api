@@ -1,31 +1,15 @@
 apply plugin: 'application'
-apply plugin: 'idea'
-apply plugin: 'java'
 apply plugin: 'maven-publish'
-apply plugin: 'protobuf'
+apply plugin: 'wrapper'
 
-group 'com.github.kevints.mesos'
-version = '0.18'
-mainClassName = 'MesosMasterClientTool'
-
-repositories {
-  mavenCentral()
-  mavenLocal()
-}
-
-idea {
-  module {
-    downloadJavadoc = true
-    downloadSources = true
-  }
+wrapper {
+  gradleVersion = '2.0'
 }
 
 dependencies {
-  protoCompile 'com.google.protobuf:protobuf-java:2.5.0'
-  testCompile 'junit:junit:4.11'
-  compile 'com.google.http-client:google-http-client:1.18.0-rc'
-  compile 'com.google.http-client:google-http-client-protobuf:1.18.0-rc'
-  compile 'com.google.guava:guava:17.0'
+  def googleHttpClientVersion = '1.18.0-rc'
+  compile "com.google.http-client:google-http-client:${googleHttpClientVersion}"
+  compile "com.google.http-client:google-http-client-protobuf:${googleHttpClientVersion}"
   compile 'org.eclipse.jetty:jetty-server:9.2.0.M0'
   compile 'org.eclipse.jetty:jetty-servlet:9.2.0.M0'
   compile 'org.slf4j:slf4j-jcl:1.7.6'
@@ -35,6 +19,30 @@ publishing {
   publications {
     mavenJava(MavenPublication) {
       from components.java
+    }
+  }
+}
+
+allprojects {
+  apply plugin: 'java'
+  apply plugin: 'idea'
+  apply plugin: 'protobuf'
+
+  group 'com.github.kevints.mesos'
+  version = '0.19-SNAPSHOT'
+
+  dependencies {
+    compile 'com.google.guava:guava:17.0'
+    protoCompile 'com.google.protobuf:protobuf-java:2.5.0'
+    testCompile 'junit:junit:4.11'
+  }
+  repositories {
+    mavenCentral()
+  }
+  idea {
+    module {
+      downloadJavadoc = true
+      downloadSources = true
     }
   }
 }

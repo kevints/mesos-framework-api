@@ -25,6 +25,8 @@ import org.eclipse.jetty.util.component.LifeCycle;
 
 public final class DemoMain {
   public static void main(String... args) throws Exception {
+    DemoMain.class.getResourceAsStream("logging.properties");
+
     FrameworkInfo frameworkInfo = FrameworkInfo.newBuilder()
         .setUser(System.getProperty("user.name"))
         .setName("jvm")
