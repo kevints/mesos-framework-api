@@ -7,12 +7,10 @@ wrapper {
 }
 
 dependencies {
-  def googleHttpClientVersion = '1.18.0-rc'
-  compile "com.google.http-client:google-http-client:${googleHttpClientVersion}"
-  compile "com.google.http-client:google-http-client-protobuf:${googleHttpClientVersion}"
   compile 'org.eclipse.jetty:jetty-server:9.2.0.M0'
   compile 'org.eclipse.jetty:jetty-servlet:9.2.0.M0'
-  compile 'org.slf4j:slf4j-jcl:1.7.6'
+  compile 'org.slf4j:slf4j-jdk14:1.7.6'
+  compile project(':java-libprocess-client')
 }
 
 publishing {

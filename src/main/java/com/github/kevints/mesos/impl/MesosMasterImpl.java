@@ -4,9 +4,10 @@ import java.util.Collection;
 import java.util.UUID;
 import java.util.logging.Logger;
 
+import com.github.kevints.libprocess.client.LibprocessClient;
+import com.github.kevints.libprocess.client.PID;
 import com.github.kevints.mesos.MasterResolver;
 import com.github.kevints.mesos.MesosMaster;
-import com.github.kevints.mesos.PID;
 import com.github.kevints.mesos.gen.Mesos.ExecutorID;
 import com.github.kevints.mesos.gen.Mesos.Filters;
 import com.github.kevints.mesos.gen.Mesos.FrameworkID;

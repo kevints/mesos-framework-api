@@ -1,4 +1,4 @@
-package com.github.kevints.mesos;
+package com.github.kevints.libprocess.client;
 
 import org.junit.Test;
 

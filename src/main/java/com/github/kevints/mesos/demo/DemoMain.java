@@ -4,16 +4,15 @@ import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.concurrent.Executors;
 
+import com.github.kevints.libprocess.client.LibprocessClientBuilder;
+import com.github.kevints.libprocess.client.PID;
 import com.github.kevints.mesos.MasterResolver;
 import com.github.kevints.mesos.MesosMaster;
 import com.github.kevints.mesos.MesosSchedulerAdaptor;
-import com.github.kevints.mesos.PID;
 import com.github.kevints.mesos.gen.Mesos.Credential;
 import com.github.kevints.mesos.gen.Mesos.FrameworkID;
 import com.github.kevints.mesos.gen.Mesos.FrameworkInfo;
-import com.github.kevints.mesos.impl.LibprocessClientImpl;
 import com.github.kevints.mesos.impl.MesosMasterImpl;
-import com.google.common.net.HostAndPort;
 import com.google.common.util.concurrent.CheckedFuture;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListeningExecutorService;
@@ -51,10 +50,11 @@ public final class DemoMain {
     }
 
     MesosMaster mesosMaster = new MesosMasterImpl(
-        new LibprocessClientImpl(
-            //PID.fromString("master@192.168.33.7:5050"),
-            new PID("scheduler(1)", HostAndPort.fromParts(localHost.getHostAddress(), 8080)),
-            outboundMessageExecutor),
+        new LibprocessClientBuilder()
+            .setFromId("scheduler(1)")
+            .setFromPort(8080)
+            .setExecutor(outboundMessageExecutor)
+            .build(),
         new MasterResolver() {
           @Override
           public CheckedFuture<PID, ResolveException> getMaster() {
@@ -72,7 +72,6 @@ public final class DemoMain {
             .setSecret(ByteString.copyFromUtf8("pass"))
             .build())
         .setFrameworkInfo(frameworkInfo)
-        .setMasterResolver("master@127.0.0.1:5050")
         .setOutboundMessageExecutor(outboundMessageExecutor)
         .setServerExecutor(MoreExecutors.listeningDecorator(
             Executors.newCachedThreadPool(new ThreadFactoryBuilder()

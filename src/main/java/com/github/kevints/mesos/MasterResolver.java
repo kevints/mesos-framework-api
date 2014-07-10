@@ -18,7 +18,7 @@ import com.google.common.util.concurrent.CheckedFuture;
 
 public interface MasterResolver {
 
-  CheckedFuture<PID, ResolveException> getMaster();
+  CheckedFuture<com.github.kevints.libprocess.client.PID, ResolveException> getMaster();
 
   class ResolveException extends Exception {
     public ResolveException(String msg) {

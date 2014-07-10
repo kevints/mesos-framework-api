@@ -23,12 +23,12 @@ import static java.util.Objects.requireNonNull;
 public class MesosSchedulerAdaptor {
   private final Scheduler scheduler;
   private final FrameworkInfo frameworkInfo;
-//  private final MasterResolver masterResolver;
   private final Credential credential;
   private final ListeningExecutorService clientExecutor;
   private final ListeningExecutorService serverExecutor;
 
   private final Server masterServer;
+  private final int serverPort;
 
 
   public static Builder newBuilder() {
@@ -38,10 +38,10 @@ public class MesosSchedulerAdaptor {
   MesosSchedulerAdaptor(Builder builder, MesosMaster master) {
     this.scheduler = requireNonNull(builder.getScheduler());
     this.frameworkInfo = requireNonNull(builder.getFrameworkInfo());
-//    this.masterResolver = requireNonNull(builder.getMasterResolver());
     this.credential = requireNonNull(builder.getCredential());
     this.clientExecutor = requireNonNull(builder.getClientExecutor());
     this.serverExecutor = requireNonNull(builder.getServerExecutor());
+    this.serverPort = builder.getServerPort();
     requireNonNull(master);
 
     Server masterServer = new Server(new ExecutorThreadPool(builder.getServerExecutor()));
@@ -52,11 +52,10 @@ public class MesosSchedulerAdaptor {
     } catch (UnknownHostException e) {
       throw new RuntimeException(e);
     }
-    int serverPort = 8080;
 
     org.eclipse.jetty.util.thread.Scheduler taskScheduler = new ScheduledExecutorScheduler("Jetty-Scheduler", true);
 
-    // This is necessary for
+    // This is necessary for the session manager to see a non-daemon thread.
     masterServer.addBean(taskScheduler);
 
     ServerConnector connector = new ServerConnector(masterServer);
@@ -64,7 +63,6 @@ public class MesosSchedulerAdaptor {
     connector.setHost(localHost.getHostName());
     connector.setPort(serverPort);
     masterServer.addConnector(connector);
-    System.err.println(connector.getIdleTimeout());
 
     ServletContextHandler context = new ServletContextHandler(ServletContextHandler.SESSIONS);
     context.setContextPath("/scheduler(1)");
@@ -91,6 +89,7 @@ public class MesosSchedulerAdaptor {
     private Credential credential;
     private ListeningExecutorService clientExecutor;
     private ListeningExecutorService serverExecutor;
+    private int serverPort;
 
     Builder() {
 
@@ -103,16 +102,6 @@ public class MesosSchedulerAdaptor {
 
     public Builder setFrameworkInfo(FrameworkInfo frameworkInfo) {
       this.frameworkInfo = requireNonNull(frameworkInfo);
-      return this;
-    }
-
-    public Builder setMasterResolver(String connectString) {
-      // TODO: StringMasterResolver
-      return this;
-    }
-
-    public Builder setMasterResolver(MasterResolver masterResolver) {
-      this.masterResolver = requireNonNull(masterResolver);
       return this;
     }
 
@@ -162,6 +151,15 @@ public class MesosSchedulerAdaptor {
     public Builder setServerExecutor(ListeningExecutorService serverExecutor) {
       this.serverExecutor = serverExecutor;
       return this;
+    }
+    
+    public Builder setServerPort(int serverPort) {
+      this.serverPort = serverPort;
+      return this;
+    }
+
+    public int getServerPort() {
+      return serverPort;
     }
   }
 }
