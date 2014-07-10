@@ -1,14 +1,13 @@
 package com.github.kevints.mesos.demo;
 
-import java.net.InetAddress;
-import java.net.UnknownHostException;
 import java.util.concurrent.Executors;
 
 import com.github.kevints.libprocess.client.LibprocessClientBuilder;
 import com.github.kevints.libprocess.client.PID;
-import com.github.kevints.mesos.MasterResolver;
+import com.github.kevints.mesos.MesosMasterResolver;
 import com.github.kevints.mesos.MesosMaster;
 import com.github.kevints.mesos.MesosSchedulerAdaptor;
+import com.github.kevints.mesos.MesosSchedulerAdaptorImpl;
 import com.github.kevints.mesos.gen.Mesos.Credential;
 import com.github.kevints.mesos.gen.Mesos.FrameworkID;
 import com.github.kevints.mesos.gen.Mesos.FrameworkInfo;
@@ -42,20 +41,13 @@ public final class DemoMain {
             .setNameFormat("libprocess-sender-%d")
             .build()));
 
-    InetAddress localHost;
-    try {
-      localHost = InetAddress.getLocalHost();
-    } catch (UnknownHostException e) {
-      throw new RuntimeException(e);
-    }
-
     MesosMaster mesosMaster = new MesosMasterImpl(
         new LibprocessClientBuilder()
             .setFromId("scheduler(1)")
             .setFromPort(8080)
             .setExecutor(outboundMessageExecutor)
             .build(),
-        new MasterResolver() {
+        new MesosMasterResolver() {
           @Override
           public CheckedFuture<PID, ResolveException> getMaster() {
             //return Futures.immediateCheckedFuture(PID.fromString("master@127.0.0.1:5050"));
@@ -65,21 +57,19 @@ public final class DemoMain {
         },
         frameworkInfo.getId());
 
-    MesosSchedulerAdaptor schedulerAdaptor = MesosSchedulerAdaptor.newBuilder()
-        .setScheduler(new DemoSchedulerImpl(mesosMaster))
+    MesosSchedulerAdaptor schedulerAdaptor = MesosSchedulerAdaptorImpl.newBuilder()
         .setCredential(Credential.newBuilder()
             .setPrincipal("user")
             .setSecret(ByteString.copyFromUtf8("pass"))
             .build())
         .setFrameworkInfo(frameworkInfo)
-        .setOutboundMessageExecutor(outboundMessageExecutor)
         .setServerExecutor(MoreExecutors.listeningDecorator(
             Executors.newCachedThreadPool(new ThreadFactoryBuilder()
                 .setDaemon(true)
                 .setNameFormat("mesos-master-server-%d")
                 .build())
         ))
-        .build(mesosMaster);
+        .build(new DemoSchedulerImpl(mesosMaster), mesosMaster);
 
     LifeCycle lifeCycle = schedulerAdaptor.getServerLifeCycle();
     lifeCycle.start();

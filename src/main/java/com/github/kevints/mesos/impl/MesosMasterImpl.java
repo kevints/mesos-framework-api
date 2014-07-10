@@ -6,7 +6,7 @@ import java.util.logging.Logger;
 
 import com.github.kevints.libprocess.client.LibprocessClient;
 import com.github.kevints.libprocess.client.PID;
-import com.github.kevints.mesos.MasterResolver;
+import com.github.kevints.mesos.MesosMasterResolver;
 import com.github.kevints.mesos.MesosMaster;
 import com.github.kevints.mesos.gen.Mesos.ExecutorID;
 import com.github.kevints.mesos.gen.Mesos.Filters;
@@ -42,10 +42,10 @@ public class MesosMasterImpl implements MesosMaster {
   
   private final LibprocessClient client;
   private final FrameworkID frameworkId;
-  private final MasterResolver masterResolver;
+  private final MesosMasterResolver mesosMasterResolver;
 
-  public MesosMasterImpl(LibprocessClient client, MasterResolver masterResolver, FrameworkID frameworkId) {
-    this.masterResolver = requireNonNull(masterResolver);
+  public MesosMasterImpl(LibprocessClient client, MesosMasterResolver mesosMasterResolver, FrameworkID frameworkId) {
+    this.mesosMasterResolver = requireNonNull(mesosMasterResolver);
     this.client = requireNonNull(client);
     this.frameworkId = requireNonNull(frameworkId);
   }
@@ -63,7 +63,7 @@ public class MesosMasterImpl implements MesosMaster {
   }
 
   private ListenableFuture<Void> sendMessage(final Message message) {
-    return sendMessage(masterResolver.getMaster(), message);
+    return sendMessage(mesosMasterResolver.getMaster(), message);
   }
 
   @Override

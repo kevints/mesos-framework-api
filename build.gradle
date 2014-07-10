@@ -10,7 +10,7 @@ dependencies {
   compile 'org.eclipse.jetty:jetty-server:9.2.0.M0'
   compile 'org.eclipse.jetty:jetty-servlet:9.2.0.M0'
   compile 'org.slf4j:slf4j-jdk14:1.7.6'
-  compile project(':java-libprocess-client')
+  compile project(':libprocess-client')
 }
 
 publishing {

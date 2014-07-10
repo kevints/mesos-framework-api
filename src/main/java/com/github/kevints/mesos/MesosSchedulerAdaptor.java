@@ -1,165 +1,21 @@
-package com.github.kevints.mesos;
+package com.github.kevints.mesos;/*
+ * Copyright 2013 Twitter, Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 
-import java.net.InetAddress;
-import java.net.UnknownHostException;
-import java.util.concurrent.Executors;
-
-import com.github.kevints.mesos.gen.Mesos.Credential;
-import com.github.kevints.mesos.gen.Mesos.FrameworkInfo;
-import com.github.kevints.mesos.impl.SchedulerServletImpl;
-import com.google.common.util.concurrent.ListeningExecutorService;
-import com.google.common.util.concurrent.ThreadFactoryBuilder;
-
-import org.eclipse.jetty.server.Server;
-import org.eclipse.jetty.server.ServerConnector;
-import org.eclipse.jetty.servlet.ServletContextHandler;
-import org.eclipse.jetty.servlet.ServletHolder;
 import org.eclipse.jetty.util.component.LifeCycle;
-import org.eclipse.jetty.util.thread.ExecutorThreadPool;
-import org.eclipse.jetty.util.thread.ScheduledExecutorScheduler;
 
-import static java.util.Objects.requireNonNull;
-
-public class MesosSchedulerAdaptor {
-  private final Scheduler scheduler;
-  private final FrameworkInfo frameworkInfo;
-  private final Credential credential;
-  private final ListeningExecutorService clientExecutor;
-  private final ListeningExecutorService serverExecutor;
-
-  private final Server masterServer;
-  private final int serverPort;
-
-
-  public static Builder newBuilder() {
-    return new Builder();
-  }
-
-  MesosSchedulerAdaptor(Builder builder, MesosMaster master) {
-    this.scheduler = requireNonNull(builder.getScheduler());
-    this.frameworkInfo = requireNonNull(builder.getFrameworkInfo());
-    this.credential = requireNonNull(builder.getCredential());
-    this.clientExecutor = requireNonNull(builder.getClientExecutor());
-    this.serverExecutor = requireNonNull(builder.getServerExecutor());
-    this.serverPort = builder.getServerPort();
-    requireNonNull(master);
-
-    Server masterServer = new Server(new ExecutorThreadPool(builder.getServerExecutor()));
-
-    InetAddress localHost;
-    try {
-      localHost = InetAddress.getLocalHost();
-    } catch (UnknownHostException e) {
-      throw new RuntimeException(e);
-    }
-
-    org.eclipse.jetty.util.thread.Scheduler taskScheduler = new ScheduledExecutorScheduler("Jetty-Scheduler", true);
-
-    // This is necessary for the session manager to see a non-daemon thread.
-    masterServer.addBean(taskScheduler);
-
-    ServerConnector connector = new ServerConnector(masterServer);
-
-    connector.setHost(localHost.getHostName());
-    connector.setPort(serverPort);
-    masterServer.addConnector(connector);
-
-    ServletContextHandler context = new ServletContextHandler(ServletContextHandler.SESSIONS);
-    context.setContextPath("/scheduler(1)");
-    context.addServlet(new ServletHolder(
-        new SchedulerServletImpl(
-            scheduler,
-            Executors.newCachedThreadPool(
-                new ThreadFactoryBuilder().setDaemon(true).setNameFormat("status-update-ack-%d").build()),
-            master)),
-        "/*");
-
-    masterServer.setHandler(context);
-    this.masterServer = masterServer;
-  }
-
-  public LifeCycle getServerLifeCycle() {
-    return masterServer;
-  }
-
-  public static class Builder {
-    private Scheduler scheduler;
-    private FrameworkInfo frameworkInfo;
-    private MasterResolver masterResolver;
-    private Credential credential;
-    private ListeningExecutorService clientExecutor;
-    private ListeningExecutorService serverExecutor;
-    private int serverPort;
-
-    Builder() {
-
-    }
-
-    public Builder setScheduler(Scheduler scheduler) {
-      this.scheduler = requireNonNull(scheduler);
-      return this;
-    }
-
-    public Builder setFrameworkInfo(FrameworkInfo frameworkInfo) {
-      this.frameworkInfo = requireNonNull(frameworkInfo);
-      return this;
-    }
-
-    public Builder setCredential(Credential credential) {
-      this.credential = credential;
-      return this;
-    }
-
-    public Builder setOutboundMessageExecutor(ListeningExecutorService outboundMessageExecutor) {
-      this.setClientExecutor(requireNonNull(outboundMessageExecutor));
-      return this;
-    }
-
-    public MesosSchedulerAdaptor build(MesosMaster master) {
-      return new MesosSchedulerAdaptor(this, master);
-    }
-
-    public Scheduler getScheduler() {
-      return scheduler;
-    }
-
-    public FrameworkInfo getFrameworkInfo() {
-      return frameworkInfo;
-    }
-
-    public MasterResolver getMasterResolver() {
-      return masterResolver;
-    }
-
-    public Credential getCredential() {
-      return credential;
-    }
-
-    public ListeningExecutorService getClientExecutor() {
-      return clientExecutor;
-    }
-
-    public ListeningExecutorService getServerExecutor() {
-      return serverExecutor;
-    }
-
-    public Builder setClientExecutor(ListeningExecutorService clientExecutor) {
-      this.clientExecutor = clientExecutor;
-      return this;
-    }
-
-    public Builder setServerExecutor(ListeningExecutorService serverExecutor) {
-      this.serverExecutor = serverExecutor;
-      return this;
-    }
-    
-    public Builder setServerPort(int serverPort) {
-      this.serverPort = serverPort;
-      return this;
-    }
-
-    public int getServerPort() {
-      return serverPort;
-    }
-  }
+public interface MesosSchedulerAdaptor {
+  LifeCycle getServerLifeCycle();
 }

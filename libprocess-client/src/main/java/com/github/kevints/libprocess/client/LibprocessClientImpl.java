@@ -8,7 +8,6 @@ import com.google.api.client.http.HttpContent;
 import com.google.api.client.http.HttpHeaders;
 import com.google.api.client.http.HttpRequestFactory;
 import com.google.api.client.http.HttpResponse;
-import com.google.api.client.http.apache.ApacheHttpTransport;
 import com.google.api.client.http.protobuf.ProtoHttpContent;
 import com.google.common.util.concurrent.AsyncFunction;
 import com.google.common.util.concurrent.Futures;
@@ -23,12 +22,12 @@ class LibprocessClientImpl implements LibprocessClient {
 
   private final ListeningExecutorService executor;
 
-  private final HttpRequestFactory requestFactory =
-      new ApacheHttpTransport().createRequestFactory();
+  private final HttpRequestFactory requestFactory;
 
-  public LibprocessClientImpl(PID fromPid, ListeningExecutorService executor) {
+  public LibprocessClientImpl(PID fromPid, ListeningExecutorService executor, HttpRequestFactory httpRequestFactory) {
     this.fromPid = requireNonNull(fromPid);
     this.executor = requireNonNull(executor);
+    this.requestFactory = requireNonNull(httpRequestFactory);
   }
 
   @Override

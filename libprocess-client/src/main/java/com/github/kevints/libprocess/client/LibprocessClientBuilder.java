@@ -1,23 +1,11 @@
-package com.github.kevints.libprocess.client;/*
- * Copyright 2013 Twitter, Inc.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
+package com.github.kevints.libprocess.client;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.concurrent.Executors;
 
+import com.google.api.client.http.HttpRequestFactory;
+import com.google.api.client.http.apache.ApacheHttpTransport;
 import com.google.common.base.Optional;
 import com.google.common.base.Supplier;
 import com.google.common.base.Suppliers;
@@ -30,6 +18,7 @@ import static java.util.Objects.requireNonNull;
 
 public class LibprocessClientBuilder {
   private ListeningExecutorService executor;
+  private HttpRequestFactory httpRequestFactory;
   private String fromId;
   private String fromHost;
   private int fromPort;
@@ -37,7 +26,8 @@ public class LibprocessClientBuilder {
   public LibprocessClient build() {
     return new LibprocessClientImpl(
         new PID(getFromId(), HostAndPort.fromParts(getFromHost(), getFromPort())),
-        getExecutor());
+        getExecutor(),
+        getHttpRequestFactory());
   }
 
   private final Supplier<ListeningExecutorService> defaultExecutor = Suppliers.memoize(
@@ -52,6 +42,17 @@ public class LibprocessClientBuilder {
                       .build()));
         }
       });
+
+  private final Supplier<HttpRequestFactory> defaultHttpRequestFactory = Suppliers.memoize(
+      new Supplier<HttpRequestFactory>() {
+        @Override
+        public HttpRequestFactory get() {
+          return new ApacheHttpTransport.Builder()
+              .build()
+              .createRequestFactory();
+        }
+      }
+  );
 
 
   private final Supplier<String> defaultFromHost = Suppliers.memoize(
@@ -105,5 +106,14 @@ public class LibprocessClientBuilder {
   public LibprocessClientBuilder setExecutor(ListeningExecutorService executor) {
     this.executor = requireNonNull(executor);
     return this;
+  }
+
+  public LibprocessClientBuilder setHttpRequestFactory(HttpRequestFactory httpRequestFactory) {
+    this.httpRequestFactory = requireNonNull(httpRequestFactory);
+    return this;
+  }
+
+  public HttpRequestFactory getHttpRequestFactory() {
+    return Optional.fromNullable(httpRequestFactory).or(defaultHttpRequestFactory);
   }
 }

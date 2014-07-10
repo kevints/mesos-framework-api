@@ -16,7 +16,7 @@ package com.github.kevints.mesos;/*
 
 import com.google.common.util.concurrent.CheckedFuture;
 
-public interface MasterResolver {
+public interface MesosMasterResolver {
 
   CheckedFuture<com.github.kevints.libprocess.client.PID, ResolveException> getMaster();
 
