@@ -1,5 +1,6 @@
 dependencies {
-  def googleHttpClientVersion = '1.18.0-rc'
-  compile "com.google.http-client:google-http-client:${googleHttpClientVersion}"
-  compile "com.google.http-client:google-http-client-protobuf:${googleHttpClientVersion}"
+  compile thirdparty.googleHttpClient
+  compile thirdparty.guava
+  compile thirdparty.protobuf
+  testCompile thirdparty.junit
 }

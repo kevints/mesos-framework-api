@@ -1,5 +1,4 @@
 apply plugin: 'application'
-apply plugin: 'maven-publish'
 apply plugin: 'wrapper'
 
 mainClassName = 'com.github.kevints.mesos.scheduler.demo.DemoMain'
@@ -14,26 +13,19 @@ dependencies {
   compile 'org.slf4j:slf4j-jdk14:1.7.6'
 }
 
-publishing {
-  publications {
-    mavenJava(MavenPublication) {
-      from components.java
+allprojects {
+  configurations.all {
+    resolutionStrategy {
+      failOnVersionConflict()
     }
   }
-}
 
-subprojects {
   apply plugin: 'java'
   apply plugin: 'idea'
-  apply plugin: 'protobuf'
 
   group 'com.github.kevints.mesos'
   version = '0.19-SNAPSHOT'
 
-  dependencies {
-    compile 'com.google.guava:guava:17.0'
-    testCompile 'junit:junit:4.11'
-  }
   repositories {
     mavenCentral()
   }
@@ -41,6 +33,24 @@ subprojects {
     module {
       downloadJavadoc = true
       downloadSources = true
+    }
+  }
+
+  ext.thirdparty = [
+    junit: 'junit:junit:4.11',
+    googleHttpClient: 'com.google.http-client:google-http-client:1.18.0-rc',
+    guava: 'com.google.guava:guava:17.0',
+    protobuf: 'com.google.protobuf:protobuf-java:2.5.0'
+  ]
+}
+
+subprojects {
+  apply plugin: 'maven-publish'
+  publishing {
+    publications {
+      mavenJava(MavenPublication) {
+        from components.java
+      }
     }
   }
 }

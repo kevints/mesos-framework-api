@@ -3,12 +3,12 @@ package com.github.kevints.libprocess.client;
 import java.io.IOException;
 import java.util.concurrent.Callable;
 
+import com.google.api.client.http.ByteArrayContent;
 import com.google.api.client.http.GenericUrl;
 import com.google.api.client.http.HttpContent;
 import com.google.api.client.http.HttpHeaders;
 import com.google.api.client.http.HttpRequestFactory;
 import com.google.api.client.http.HttpResponse;
-import com.google.api.client.http.protobuf.ProtoHttpContent;
 import com.google.common.util.concurrent.AsyncFunction;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
@@ -39,7 +39,9 @@ class LibprocessClientImpl implements LibprocessClient {
     final ListenableFuture<HttpResponse> response = executor.submit(new Callable<HttpResponse>() {
       @Override
       public HttpResponse call() throws Exception {
-        HttpContent content = new ProtoHttpContent(message);
+        // TODO: Update to this once it uses the same version of protobuf.
+        //HttpContent content = new ProtoHttpContent(message);
+        HttpContent content = new ByteArrayContent("application/x-protobuf", message.toByteArray());
         GenericUrl url = new GenericUrl(to.getBaseUrl());
         url.appendRawPath("/" + message.getDescriptorForType().getFullName());
 

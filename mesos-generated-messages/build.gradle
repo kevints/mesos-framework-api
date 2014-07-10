@@ -1,5 +1,6 @@
 apply plugin: 'protobuf'
 
 dependencies {
-  protoCompile 'com.google.protobuf:protobuf-java:2.5.0'
+  protoCompile thirdparty.protobuf
+  testCompile thirdparty.junit
 }
