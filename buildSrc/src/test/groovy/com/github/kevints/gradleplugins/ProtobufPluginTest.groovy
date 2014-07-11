@@ -9,9 +9,8 @@ import static org.junit.Assert.assertTrue
 
 public class ProtobufPluginTest {
   @Test
-  public void testNoop() {
+  public void testApply() {
     Project project = ProjectBuilder.builder().build()
-    new ProtobufPlugin().apply(project)
-
+    project.apply plugin: 'protobuf'
   }
 }

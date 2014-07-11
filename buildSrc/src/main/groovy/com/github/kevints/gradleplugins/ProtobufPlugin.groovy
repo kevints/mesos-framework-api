@@ -1,44 +1,51 @@
 package com.github.kevints.gradleplugins
 
+import org.gradle.api.GradleException
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.tasks.compile.JavaCompile
 
 class ProtobufPlugin implements Plugin<Project> {
   void apply(Project project) {
-    project.apply plugin: 'java'
+    project.configure(project) {
+      apply plugin: 'java'
 
-    def configurations = project.configurations
-    def compileConfiguration = configurations.getByName('compile')
-    def protoCompileConfiguration = configurations.create('protoCompile')
-    compileConfiguration.extendsFrom(protoCompileConfiguration)
+      // Hardcoded for now to avoid evaluation tricks.
+      def libprotocVersion = '2.5.0'
 
-    project.dependencies.compile project.files("${project.buildDir}/proto/classes") {
-      builtBy 'classesProto'
-    }
-
-    project.sourceSets.main {
-      output.dir("${project.buildDir}/proto/classes", generatedBy: 'classesProto')
-    }
-
-    project.task('generateProtoJava') {
-      ext.inputFiles = project.fileTree("${project.projectDir}/src/main/proto").matching{include "**/*.proto"}
-      ext.outputDir = project.file("${project.buildDir}/proto/gen-java")
-      doLast {
-        outputDir.exists() || outputDir.mkdirs()
-        inputFiles.each { File file ->
-          project.exec {
-            commandLine 'protoc', '-I', "${project.projectDir}/src/main/proto",
-                '--java_out', "${outputDir}", "${file.path}"
+      configurations.create('protoCompile')
+      configurations.compile.extendsFrom(configurations.protoCompile)
+      dependencies {
+        protoCompile "com.google.protobuf:protobuf-java:${libprotocVersion}"
+        compile files("${buildDir}/proto/classes") {
+          builtBy 'classesProto'
+        }
+      }
+      sourceSets.main {
+        output.dir("${buildDir}/proto/classes", generatedBy: 'classesProto')
+      }
+      task('generateProtoJava') {
+        ext.inputFiles = project.fileTree("${projectDir}/src/main/proto").matching{include "**/*.proto"}
+        ext.outputDir = project.file("${buildDir}/proto/gen-java")
+        doLast {
+          if ('protoc --version'.execute().in.text.trim() != "libprotoc ${libprotocVersion}") {
+            throw new GradleException("Invalid protoc version - need libprocoto ${libprotocVersion}")
+          }
+          outputDir.exists() || outputDir.mkdirs()
+          inputFiles.each { File file ->
+            exec {
+              commandLine 'protoc', '-I', "${projectDir}/src/main/proto",
+                  '--java_out', "${outputDir}", "${file.path}"
+            }
           }
         }
       }
-    }
 
-    project.task('classesProto', type: JavaCompile, dependsOn: 'generateProtoJava') {
-      source "${project.generateProtoJava.ext.outputDir}"
-      classpath = configurations.protoCompile
-      destinationDir = project.file("${project.buildDir}/proto/classes")
+      task('classesProto', type: JavaCompile, dependsOn: 'generateProtoJava') {
+        source "${generateProtoJava.ext.outputDir}"
+        classpath = configurations.protoCompile
+        destinationDir = project.file("${buildDir}/proto/classes")
+      }
     }
   }
 }
