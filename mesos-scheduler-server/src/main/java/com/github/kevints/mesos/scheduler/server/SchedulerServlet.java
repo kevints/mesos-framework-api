@@ -2,7 +2,6 @@ package com.github.kevints.mesos.scheduler.server;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.nio.file.Paths;
 import java.util.concurrent.Executor;
 
 import javax.servlet.ServletException;
@@ -19,17 +18,18 @@ import com.github.kevints.mesos.messages.gen.Messages.LostSlaveMessage;
 import com.github.kevints.mesos.messages.gen.Messages.RescindResourceOfferMessage;
 import com.github.kevints.mesos.messages.gen.Messages.ResourceOffersMessage;
 import com.github.kevints.mesos.messages.gen.Messages.StatusUpdateMessage;
+import com.google.common.base.Optional;
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
 
 import static java.util.Objects.requireNonNull;
 
-public class SchedulerServletImpl extends HttpServlet {
+public class SchedulerServlet extends HttpServlet {
   private final Scheduler scheduler;
   private final MesosMasterClient mesosMasterClient;
   private final Executor statusUpdateAcknowledgementExecutor;
 
-  public SchedulerServletImpl(
+  public SchedulerServlet(
       Scheduler scheduler,
       Executor statusUpdateAcknowledgementExecutor,
       MesosMasterClient mesosMasterClient) {
@@ -43,13 +43,15 @@ public class SchedulerServletImpl extends HttpServlet {
   protected void doPost(HttpServletRequest req, HttpServletResponse resp)
       throws ServletException, IOException {
 
-    String pathInfo = req.getPathInfo();
-    if (pathInfo == null) {
+    String messageType;
+    Optional<String> messageTypeOptional = LibprocessServletUtils.parseMessageType(req);
+    if (messageTypeOptional.isPresent()) {
+      messageType = messageTypeOptional.get();
+    } else {
       resp.sendError(HttpServletResponse.SC_BAD_REQUEST, "Invalid path.");
       return;
     }
 
-    String messageType = Paths.get(pathInfo).getFileName().toString();
     InputStream inputStream = req.getInputStream();
 
     if (FrameworkRegisteredMessage.getDescriptor().getFullName().equals(messageType)) {

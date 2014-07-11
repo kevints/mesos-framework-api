@@ -1,5 +1,7 @@
 package com.github.kevints.mesos.scheduler.server;
 
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.util.concurrent.Executors;
 
 import com.github.kevints.mesos.MesosSchedulerServer;
@@ -13,9 +15,12 @@ import com.google.common.util.concurrent.ListeningExecutorService;
 import com.google.common.util.concurrent.MoreExecutors;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 
+import static java.util.Objects.requireNonNull;
+
 public class MesosSchedulerServerBuilder {
   private Credential credential;
   private ListeningExecutorService serverExecutor;
+  private String serverHostAddress;
   private Integer serverPort;
 
   private final Supplier<ListeningExecutorService> defaultServerExecutor = Suppliers.memoize(
@@ -32,12 +37,29 @@ public class MesosSchedulerServerBuilder {
       }
   );
 
+  private final Supplier<String> defaultServerHostAddress = Suppliers.memoize(
+      new Supplier<String>() {
+        @Override
+        public String get() {
+          try {
+            return InetAddress.getLocalHost().getHostAddress();
+          } catch (UnknownHostException e) {
+            return InetAddress.getLoopbackAddress().getHostAddress();
+          }
+        }
+      }
+  );
+
   public MesosSchedulerServerBuilder setCredential(Credential credential) {
     this.credential = credential;
     return this;
   }
 
-  public MesosSchedulerServer build(Scheduler scheduler, MesosMasterClient master, FrameworkInfo frameworkInfo) {
+  public MesosSchedulerServer build(
+      Scheduler scheduler,
+      MesosMasterClient master,
+      FrameworkInfo frameworkInfo) {
+
     return new MesosSchedulerServerImpl(this, scheduler, master, frameworkInfo);
   }
 
@@ -50,7 +72,7 @@ public class MesosSchedulerServerBuilder {
   }
 
   public MesosSchedulerServerBuilder setServerExecutor(ListeningExecutorService serverExecutor) {
-    this.serverExecutor = serverExecutor;
+    this.serverExecutor = requireNonNull(serverExecutor);
     return this;
   }
 
@@ -61,5 +83,14 @@ public class MesosSchedulerServerBuilder {
 
   public int getServerPort() {
     return Optional.fromNullable(serverPort).or(8080);
+  }
+
+  public String getServerHostAddress() {
+    return Optional.fromNullable(serverHostAddress).or(defaultServerHostAddress);
+  }
+
+  public MesosSchedulerServerBuilder setServerHostAddress(String serverHostAddress) {
+    this.serverHostAddress = requireNonNull(serverHostAddress);
+    return this;
   }
 }
