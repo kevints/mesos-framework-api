@@ -8,22 +8,14 @@ only operation implemented is unauthenticated framework registration.
 Dependencies
 
 ```
-$ lsb_release -ds
-Ubuntu 13.10
-
 $ protoc --version
-libprotoc 2.4.1
+libprotoc 2.5.0
 
-$ thrift -version
-Thrift version 0.8.0
-
-$ java -version
-java version "1.7.0_51"
-OpenJDK Runtime Environment (IcedTea 2.4.4) (7u51-2.4.4-0ubuntu0.13.10.1)
-OpenJDK 64-Bit Server VM (build 24.45-b08, mixed mode)
-
-$ git clone https://github.com/kevints/jompactor
-$ ./gradlew publishToMavenLocal
+% java -version
+Picked up JAVA_TOOL_OPTIONS: -Dfile.encoding=utf8
+java version "1.7.0_07"
+Java(TM) SE Runtime Environment (build 1.7.0_07-b10)
+Java HotSpot(TM) 64-Bit Server VM (build 23.3-b01, mixed mode)
 ```
 
 Running the test tool
