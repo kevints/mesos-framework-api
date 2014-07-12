@@ -1,2 +1,2 @@
 rootProject.name = 'mesos-framework-api'
-include 'libprocess-client', 'mesos-scheduler-server', 'mesos-master-client', 'mesos-scheduler-demo', 'mesos-generated-messages'
+include 'libprocess-client', 'mesos-scheduler-server', 'mesos-master-client', 'mesos-master-resolver', 'mesos-scheduler-demo', 'mesos-generated-messages'

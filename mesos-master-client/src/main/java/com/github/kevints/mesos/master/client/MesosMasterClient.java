@@ -38,4 +38,6 @@ public interface MesosMasterClient {
   ListenableFuture<?> reconcileTasks(Collection<TaskStatus> statuses);
 
   ListenableFuture<?> acknowledgeStatusUpdateMessage(StatusUpdateMessage statusUpdate);
+
+  ListenableFuture<?> authenticate();
 }

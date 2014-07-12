@@ -10,16 +10,9 @@ wrapper {
 
 dependencies {
   compile project(':mesos-scheduler-demo')
-  compile 'org.slf4j:slf4j-jdk14:1.7.6'
 }
 
 allprojects {
-  configurations.all {
-    resolutionStrategy {
-      failOnVersionConflict()
-    }
-  }
-
   apply plugin: 'java'
   apply plugin: 'idea'
 
@@ -40,8 +33,19 @@ allprojects {
     junit: 'junit:junit:4.11',
     googleHttpClient: 'com.google.http-client:google-http-client:1.18.0-rc',
     guava: 'com.google.guava:guava:17.0',
-    protobuf: 'com.google.protobuf:protobuf-java:2.5.0'
+    protobuf: 'com.google.protobuf:protobuf-java:2.5.0',
+    slf4jApi: 'org.slf4j:slf4j-api:1.7.6',
+    slf4jJdk14: 'org.slf4j:slf4j-jdk14:1.7.6',
+    zookeeper: 'org.apache.zookeeper:zookeeper:3.4.6'
   ]
+
+  configurations.all {
+    resolutionStrategy {
+      failOnVersionConflict()
+      force thirdparty.slf4jApi
+    }
+  }
+
 }
 
 subprojects {

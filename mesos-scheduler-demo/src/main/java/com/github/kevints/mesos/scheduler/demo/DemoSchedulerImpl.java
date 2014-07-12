@@ -21,6 +21,7 @@ import com.github.kevints.mesos.messages.gen.Messages.StatusUpdateMessage;
 import com.github.kevints.mesos.scheduler.server.Scheduler;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
+import com.google.common.util.concurrent.SettableFuture;
 import com.google.protobuf.Message;
 import com.google.protobuf.TextFormat;
 
@@ -29,6 +30,10 @@ import static java.util.Objects.requireNonNull;
 public class DemoSchedulerImpl implements Scheduler {
   private static final Logger LOG = Logger.getLogger(DemoSchedulerImpl.class.getName());
 
+  // The master will send FrameworkReregisteredMessage or FrameworkRegisteredMessage in response
+  // to a registration request depending on its own internal state.
+  private final SettableFuture<Message> frameworkRegistrationResult =
+      SettableFuture.create();
   private final AtomicLong taskIdGenerator = new AtomicLong();
 
   private final MesosMasterClient master;
@@ -44,11 +49,17 @@ public class DemoSchedulerImpl implements Scheduler {
   @Override
   public void registered(FrameworkRegisteredMessage message) {
     log(message);
+    if (!frameworkRegistrationResult.set(message)) {
+      LOG.warning("Ignoring duplicate reregistered message.");
+    }
   }
 
   @Override
   public void reregistered(FrameworkReregisteredMessage message) {
     log(message);
+    if (!frameworkRegistrationResult.set(message)) {
+      LOG.warning("Ignoring duplicate reregistered message.");
+    }
   }
 
   @Override
@@ -93,5 +104,12 @@ public class DemoSchedulerImpl implements Scheduler {
   @Override
   public void frameworkError(FrameworkErrorMessage message) {
     log(message);
+    if (frameworkRegistrationResult.setException(new Exception(message.getMessage()))) {
+      LOG.warning("Propagated framework error as registration failure.");
+    }
+  }
+
+  public ListenableFuture<Message> getFrameworkRegistrationResult() {
+      return frameworkRegistrationResult;
   }
 }

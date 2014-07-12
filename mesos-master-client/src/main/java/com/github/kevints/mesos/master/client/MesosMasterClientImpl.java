@@ -16,6 +16,7 @@ import com.github.kevints.mesos.messages.gen.Mesos.SlaveID;
 import com.github.kevints.mesos.messages.gen.Mesos.TaskID;
 import com.github.kevints.mesos.messages.gen.Mesos.TaskInfo;
 import com.github.kevints.mesos.messages.gen.Mesos.TaskStatus;
+import com.github.kevints.mesos.messages.gen.Messages.AuthenticateMessage;
 import com.github.kevints.mesos.messages.gen.Messages.FrameworkToExecutorMessage;
 import com.github.kevints.mesos.messages.gen.Messages.KillTaskMessage;
 import com.github.kevints.mesos.messages.gen.Messages.LaunchTasksMessage;
@@ -154,6 +155,17 @@ public class MesosMasterClientImpl implements MesosMasterClient {
             .setSlaveId(statusUpdate.getUpdate().getSlaveId())
             .setUuid(statusUpdate.getUpdate().getUuid())
             .setTaskId(statusUpdate.getUpdate().getStatus().getTaskId())
+            .build());
+  }
+
+  @Override
+  public ListenableFuture<Void> authenticate() {
+    PID authenticateePid = new PID("authenticatee", client.getDefaultFromPid().getHostAndPort());
+    return client.send(
+        authenticateePid,
+        mesosMasterResolver.getMaster(),
+        AuthenticateMessage.newBuilder()
+            .setPid(client.getDefaultFromPid().toString())
             .build());
   }
 }

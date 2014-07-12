@@ -105,4 +105,9 @@ class LibprocessClientImpl implements LibprocessClient {
   public ListenableFuture<Void> send(ListenableFuture<PID> to, Message message) {
     return send(fromPid, to, message);
   }
+
+  @Override
+  public PID getDefaultFromPid() {
+    return fromPid;
+  }
 }

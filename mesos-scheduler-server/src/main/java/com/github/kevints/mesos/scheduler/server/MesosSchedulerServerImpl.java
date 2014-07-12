@@ -1,6 +1,7 @@
 package com.github.kevints.mesos.scheduler.server;
 
-import com.github.kevints.mesos.MesosSchedulerServer;
+import com.github.kevints.libprocess.client.LibprocessClientBuilder;
+import com.github.kevints.libprocess.client.PID;
 import com.github.kevints.mesos.master.client.MesosMasterClient;
 import com.github.kevints.mesos.messages.gen.Mesos.Credential;
 import com.github.kevints.mesos.messages.gen.Mesos.FrameworkInfo;
@@ -26,6 +27,7 @@ public class MesosSchedulerServerImpl implements MesosSchedulerServer {
 
   private final Server masterServer;
   private final int serverPort;
+  private final AuthenticateeServlet authenticateeServlet;
 
   MesosSchedulerServerImpl(MesosSchedulerServerBuilder builder, Scheduler scheduler, MesosMasterClient master, FrameworkInfo frameworkInfo) {
     this.credential = requireNonNull(builder.getCredential());
@@ -56,6 +58,15 @@ public class MesosSchedulerServerImpl implements MesosSchedulerServer {
         new SchedulerServlet(scheduler, serverExecutor, master)),
         "/scheduler(1)/*");
 
+    authenticateeServlet = new AuthenticateeServlet(
+        PID.fromString("authenticatee@127.0.0.1:8080"),
+        credential,
+        new LibprocessClientBuilder()
+            .setFromPort(8080)
+            .setFromId("authenticatee")
+            .build());
+    context.addServlet(new ServletHolder(authenticateeServlet), "/authenticatee/*");
+
     schedulerProcessServer.setHandler(context);
     this.masterServer = schedulerProcessServer;
   }
@@ -65,4 +76,8 @@ public class MesosSchedulerServerImpl implements MesosSchedulerServer {
     return masterServer;
   }
 
+  @Override
+  public AuthenticateeServlet getAuthenticateeServlet() {
+    return authenticateeServlet;
+  }
 }

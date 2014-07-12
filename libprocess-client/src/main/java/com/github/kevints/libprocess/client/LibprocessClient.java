@@ -35,4 +35,6 @@ public interface LibprocessClient {
   ListenableFuture<Void> send(PID from, PID to, Message message);
 
   ListenableFuture<Void> send(PID from, ListenableFuture<PID> to, Message message);
+
+  PID getDefaultFromPid();
 }

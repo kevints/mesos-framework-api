@@ -1,0 +1,5 @@
+dependencies {
+  compile project(':mesos-master-client')
+  compile thirdparty.guava
+  compile thirdparty.zookeeper
+}

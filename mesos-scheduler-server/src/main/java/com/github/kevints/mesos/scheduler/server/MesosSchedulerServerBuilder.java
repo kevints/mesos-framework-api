@@ -4,7 +4,6 @@ import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.concurrent.Executors;
 
-import com.github.kevints.mesos.MesosSchedulerServer;
 import com.github.kevints.mesos.master.client.MesosMasterClient;
 import com.github.kevints.mesos.messages.gen.Mesos.Credential;
 import com.github.kevints.mesos.messages.gen.Mesos.FrameworkInfo;
