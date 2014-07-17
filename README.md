@@ -2,8 +2,7 @@ A pure-JVM implementation of the Mesos framework API
 (SchedulerDriver+Scheduler and ExecutorDriver+Executor).
 
 NOTE: This code relies on undocumented internal Mesos APIs and is
-only intended as a proof of concept. Also note that currently the
-only operation implemented is unauthenticated framework registration.
+only intended as a proof of concept.
 
 Dependencies
 ============
@@ -61,3 +60,7 @@ $ cd mesos-framework-api
 $ ./gradlew run
 ```
 The demo framework authenticates, registers, and launches hello world tasks.
+
+TODO
+====
+* Mesos master discovery via ZooKeeper
