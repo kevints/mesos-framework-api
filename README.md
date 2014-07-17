@@ -6,6 +6,7 @@ only intended as a proof of concept. Also note that currently the
 only operation implemented is unauthenticated framework registration.
 
 Dependencies
+============
 
 ```
 $ protoc --version
@@ -18,25 +19,44 @@ Java(TM) SE Runtime Environment (build 1.7.0_07-b10)
 Java HotSpot(TM) 64-Bit Server VM (build 23.3-b01, mixed mode)
 ```
 
+Running the unit tests
+======================
+```
+$ git clone https://github.com/kevints/mesos-framework-api
+$ cd mesos-framework-api
+$ ./gradlew build
+```
+
 Running the test tool
+=====================
 
-First build mesos and run a local master
-
+Build mesos
+-----------
 ```
 $ git clone https://github.com/apache/mesos
 $ ./bootstrap
 $ ./configure
 $ make
-$ ./bin/mesos-master.sh
 ```
 
-Check out the traffic between the 2
+Run a mesos master
+------------------
 ```
-$ sudo tcpdump -i lo -vvv -A port 5050 or port 8080
+$ cd mesos
+$ ./bin/mesos-master.sh --registry=in_memory --ip=127.0.0.1 --port=5050 --authenticate --credentials=<(echo "test pass")
 ```
 
-Now build the test tool and talk to it (you get to see your framework ID).
+Run a mesos slave
+-----------------
 ```
-$ git clone https://github.com/kevints/mesos-framework-api
+$ cd mesos
+$ ./bin/mesos-slave.sh --master=127.0.0.1:5050
+```
+
+Run the demo framework
+----------------------
+```
+$ cd mesos-framework-api
 $ ./gradlew run
 ```
+The demo framework authenticates, registers, and launches hello world tasks.
