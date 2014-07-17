@@ -34,6 +34,7 @@ Build mesos
 -----------
 ```
 $ git clone https://github.com/apache/mesos
+$ cd mesos
 $ ./bootstrap
 $ ./configure
 $ make
