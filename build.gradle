@@ -30,6 +30,7 @@ allprojects {
   }
 
   ext.thirdparty = [
+    curator: 'org.apache.curator:curator-recipes:2.6.0',
     junit: 'junit:junit:4.11',
     googleHttpClient: 'com.google.http-client:google-http-client:1.18.0-rc',
     guava: 'com.google.guava:guava:17.0',
