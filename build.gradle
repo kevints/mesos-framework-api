@@ -32,8 +32,10 @@ allprojects {
   ext.thirdparty = [
     curator: 'org.apache.curator:curator-recipes:2.6.0',
     junit: 'junit:junit:4.11',
+    jettyServer: 'org.eclipse.jetty:jetty-server:9.2.0.M0',
+    jettyServlet: 'org.eclipse.jetty:jetty-servlet:9.2.0.M0',
     googleHttpClient: 'com.google.http-client:google-http-client:1.18.0-rc',
-    guava: 'com.google.guava:guava:17.0',
+    guava: 'com.google.guava:guava:16.0.1',
     protobuf: 'com.google.protobuf:protobuf-java:2.5.0',
     slf4jApi: 'org.slf4j:slf4j-api:1.7.6',
     slf4jJdk14: 'org.slf4j:slf4j-jdk14:1.7.6',
@@ -57,5 +59,59 @@ subprojects {
         from components.java
       }
     }
+  }
+}
+
+project(':libprocess-client') {
+  dependencies {
+    compile thirdparty.googleHttpClient
+    compile thirdparty.guava
+    compile thirdparty.protobuf
+    testCompile thirdparty.junit
+  }
+}
+
+project(':mesos-generated-messages') {
+  apply plugin: 'protobuf'
+
+  dependencies {
+    testCompile thirdparty.junit
+  }
+}
+
+project(':mesos-master-client') {
+  dependencies {
+    compile project(':libprocess-client')
+    compile project(':mesos-generated-messages')
+    compile thirdparty.protobuf
+  }
+}
+
+project(':mesos-master-resolver') {
+  dependencies {
+    compile project(':mesos-master-client')
+    compile thirdparty.curator
+    compile thirdparty.guava
+    compile thirdparty.zookeeper
+  }
+}
+
+project(':mesos-scheduler-demo') {
+  dependencies {
+    compile thirdparty.slf4jJdk14
+    compile project(':libprocess-client')
+    compile project(':mesos-generated-messages')
+    compile project(':mesos-master-client')
+    compile project(':mesos-master-resolver')
+    compile project(':mesos-scheduler-server')
+  }
+}
+
+project(':mesos-scheduler-server') {
+  dependencies {
+    compile thirdparty.jettyServer
+    compile thirdparty.jettyServlet
+    compile project(':mesos-generated-messages')
+    compile project(':mesos-master-client')
   }
 }

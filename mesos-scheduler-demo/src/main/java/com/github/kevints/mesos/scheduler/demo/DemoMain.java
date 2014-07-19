@@ -9,7 +9,8 @@ import com.github.kevints.libprocess.client.LibprocessClientBuilder;
 import com.github.kevints.libprocess.client.PID;
 import com.github.kevints.mesos.master.client.MesosMasterClient;
 import com.github.kevints.mesos.master.client.MesosMasterClientImpl;
-import com.github.kevints.mesos.master.client.MesosMasterResolver;
+import com.github.kevints.mesos.master.resolver.ZkConnector;
+import com.github.kevints.mesos.master.resolver.ZookeeperMasterResolver;
 import com.github.kevints.mesos.messages.gen.Mesos.Credential;
 import com.github.kevints.mesos.messages.gen.Mesos.FrameworkID;
 import com.github.kevints.mesos.messages.gen.Mesos.FrameworkInfo;
@@ -20,7 +21,6 @@ import com.github.kevints.mesos.scheduler.server.MesosSchedulerServer;
 import com.github.kevints.mesos.scheduler.server.MesosSchedulerServerBuilder;
 import com.google.common.net.HostAndPort;
 import com.google.common.util.concurrent.AsyncFunction;
-import com.google.common.util.concurrent.CheckedFuture;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.ListeningExecutorService;
@@ -65,12 +65,9 @@ public final class DemoMain {
             .setFromPort(schedulerPort)
             .setExecutor(outboundMessageExecutor)
             .build(),
-        new MesosMasterResolver() {
-          @Override
-          public CheckedFuture<PID, ResolveException> getMaster() {
-            return Futures.immediateCheckedFuture(new PID("master", masterHostAndPort));
-          }
-        },
+        new ZookeeperMasterResolver(
+            new ZkConnector("localhost:2181", 10000, TimeUnit.MILLISECONDS),
+            "/mesos/master"),
         frameworkInfo.getId());
 
     final DemoSchedulerImpl demoScheduler = new DemoSchedulerImpl(mesosMasterClient);

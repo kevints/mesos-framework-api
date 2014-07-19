@@ -1,6 +1,0 @@
-dependencies {
-  compile thirdparty.googleHttpClient
-  compile thirdparty.guava
-  compile thirdparty.protobuf
-  testCompile thirdparty.junit
-}

@@ -27,7 +27,6 @@ import com.github.kevints.mesos.messages.gen.Messages.ResourceRequestMessage;
 import com.github.kevints.mesos.messages.gen.Messages.ReviveOffersMessage;
 import com.github.kevints.mesos.messages.gen.Messages.StatusUpdateAcknowledgementMessage;
 import com.github.kevints.mesos.messages.gen.Messages.StatusUpdateMessage;
-import com.google.common.util.concurrent.CheckedFuture;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
 import com.google.protobuf.ByteString;
@@ -49,7 +48,7 @@ public class MesosMasterClientImpl implements MesosMasterClient {
   }
 
   private ListenableFuture<Void> sendMessage(
-      final CheckedFuture<PID, ?> to,
+      final ListenableFuture<PID> to,
       final Message message) {
 
     return client.send(to, message);

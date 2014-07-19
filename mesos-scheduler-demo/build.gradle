@@ -1,8 +1,0 @@
-dependencies {
-  compile thirdparty.slf4jJdk14
-  compile project(':libprocess-client')
-  compile project(':mesos-generated-messages')
-  compile project(':mesos-master-client')
-  compile project(':mesos-master-resolver')
-  compile project(':mesos-scheduler-server')
-}

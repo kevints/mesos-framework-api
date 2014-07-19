@@ -1,5 +1,0 @@
-dependencies {
-  compile project(':libprocess-client')
-  compile project(':mesos-generated-messages')
-  compile thirdparty.protobuf
-}

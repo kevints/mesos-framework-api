@@ -1,5 +1,0 @@
-apply plugin: 'protobuf'
-
-dependencies {
-  testCompile thirdparty.junit
-}
